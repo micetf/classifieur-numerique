@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
+import { getDateForFilename } from "../../utils/dateUtils.js";
 
 /**
  * Composant pour afficher les résultats de classification et permettre
@@ -20,8 +21,7 @@ const ClassificationResult = ({
     // Extrait le nom de fichier de base depuis le contenu original
     // ou génère un nom par défaut
     const generateDefaultFileName = useCallback(() => {
-        const today = new Date();
-        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, "-");
+        const dateStr = getDateForFilename();
 
         // Essayer d'extraire un nom de fichier du contenu original
         let baseName = "document";

@@ -1,7 +1,8 @@
 // src/hooks/useClassifier.js
 import { useState, useCallback, useEffect } from "react";
 import { classifyContent, detectRgpdIssues } from "./classifier";
-
+import { validateClassifierInput } from "../utils/validationUtils";
+import { settingsService } from "../services/settingsService";
 /**
  * Hook personnalisé pour la classification de documents
  * Fournit une interface simple pour utiliser les fonctionnalités de classification
@@ -16,22 +17,12 @@ export const useClassifier = () => {
      * Charger les préférences IA depuis localStorage au chargement
      */
     useEffect(() => {
-        try {
-            const savedSettings = localStorage.getItem("classifieurSettings");
-            if (savedSettings) {
-                const settings = JSON.parse(savedSettings);
-                if (settings.useAI !== undefined) {
-                    setIsUsingAI(settings.useAI);
-                }
-                if (settings.aiApiKey) {
-                    setApiKey(settings.aiApiKey);
-                }
-            }
-        } catch (error) {
-            console.error(
-                "Erreur lors du chargement des paramètres IA:",
-                error
-            );
+        const settings = settingsService.getSettings();
+        if (settings.useAI !== undefined) {
+            setIsUsingAI(settings.useAI);
+        }
+        if (settings.aiApiKey) {
+            setApiKey(settings.aiApiKey);
         }
     }, []);
 
@@ -40,12 +31,9 @@ export const useClassifier = () => {
      */
     const classify = useCallback(
         async (content, arborescence) => {
-            if (!content || !arborescence) {
-                return {
-                    suggestions: [],
-                    allMatches: [],
-                    originalContent: content || "",
-                };
+            const validation = validateClassifierInput(content, arborescence);
+            if (!validation.isValid) {
+                return validation.defaultResult;
             }
 
             try {
@@ -87,21 +75,9 @@ export const useClassifier = () => {
         const newValue = !isUsingAI;
         setIsUsingAI(newValue);
 
-        // Sauvegarder la préférence dans localStorage
-        try {
-            const savedSettings = localStorage.getItem("classifieurSettings");
-            let settings = savedSettings ? JSON.parse(savedSettings) : {};
-            settings.useAI = newValue;
-            localStorage.setItem(
-                "classifieurSettings",
-                JSON.stringify(settings)
-            );
-        } catch (error) {
-            console.error(
-                "Erreur lors de la sauvegarde du paramètre IA:",
-                error
-            );
-        }
+        let settings = settingsService.getSettings();
+        settings.useAI = newValue;
+        settingsService.updateSettings({ useAI: newValue });
     }, [isUsingAI]);
 
     /**
@@ -111,17 +87,9 @@ export const useClassifier = () => {
         setApiKey(key);
 
         // Sauvegarder la clé API dans localStorage
-        try {
-            const savedSettings = localStorage.getItem("classifieurSettings");
-            let settings = savedSettings ? JSON.parse(savedSettings) : {};
-            settings.aiApiKey = key;
-            localStorage.setItem(
-                "classifieurSettings",
-                JSON.stringify(settings)
-            );
-        } catch (error) {
-            console.error("Erreur lors de la sauvegarde de la clé API:", error);
-        }
+        let settings = settingsService.getSettings();
+        settings.aiApiKey = key;
+        settingsService.updateSettings({ apiKey: key });
     }, []);
 
     // API publique du hook

@@ -1,7 +1,8 @@
 // src/hooks/classifier/index.js
 import { classifyWithRules } from "./ruleBasedClassifier";
-import { classifyWithAI } from "./aiClassifier";
+import { classifyWithAI } from "../../services/aiClassifier";
 import { rgpdKeywords } from "../../constants/rgpdKeywords";
+import { validateClassifierInput } from "../../utils/validationUtils";
 
 /**
  * Fonction principale de classification qui utilise l'IA ou les règles
@@ -19,12 +20,9 @@ export const classifyContent = async (
     apiKey = ""
 ) => {
     // Validation des entrées
-    if (!content || !arborescence) {
-        return {
-            suggestions: [],
-            allMatches: [],
-            originalContent: content || "",
-        };
+    const validation = validateClassifierInput(content, arborescence);
+    if (!validation.isValid) {
+        return validation.defaultResult;
     }
 
     try {

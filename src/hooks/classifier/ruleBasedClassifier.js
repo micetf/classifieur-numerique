@@ -6,6 +6,7 @@ import {
     findCRCNDomain,
     findPathsInArborescence,
 } from "./utils";
+import { validateClassifierInput } from "../../utils/validationUtils";
 
 /**
  * Classification basée sur les règles prédéfinies
@@ -14,12 +15,9 @@ import {
  * @returns {object} Résultat de la classification
  */
 export const classifyWithRules = (content, arborescence) => {
-    if (!content || !arborescence) {
-        return {
-            suggestions: [],
-            allMatches: [],
-            originalContent: content || "",
-        };
+    const validation = validateClassifierInput(content, arborescence);
+    if (!validation.isValid) {
+        return validation.defaultResult;
     }
 
     const contentLower = content.toLowerCase();

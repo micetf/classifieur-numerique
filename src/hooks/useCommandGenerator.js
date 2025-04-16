@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import DOMPurify from "dompurify";
+import { getDateForFilename } from "../utils/dateUtils.js";
 
 export const useCommandGenerator = () => {
     /**
@@ -20,11 +21,7 @@ export const useCommandGenerator = () => {
 
             // Si aucun nom cible n'est fourni, créer un nom basé sur la date
             if (!targetFileName) {
-                const today = new Date();
-                const dateStr = today
-                    .toISOString()
-                    .slice(0, 10)
-                    .replace(/-/g, "-");
+                const dateStr = getDateForFilename();
                 const baseName = sourceFileName
                     .split(".")
                     .slice(0, -1)

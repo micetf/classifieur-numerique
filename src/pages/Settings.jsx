@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Alert from "../components/ui/Alert";
+import { settingsService } from "../services/settingsService";
 
 const Settings = () => {
     const [settings, setSettings] = useState({
@@ -22,18 +23,8 @@ const Settings = () => {
 
     // Charger les paramètres depuis le localStorage au chargement
     useEffect(() => {
-        const savedSettings = localStorage.getItem("classifieurSettings");
-        if (savedSettings) {
-            try {
-                setSettings(JSON.parse(savedSettings));
-            } catch (err) {
-                console.error("Erreur lors du chargement des paramètres:", err);
-                setAlert({
-                    type: "error",
-                    message: `Erreur lors du chargement des paramètres: ${err.message}`,
-                });
-            }
-        }
+        const settings = settingsService.getSettings();
+        setSettings(settings);
     }, []);
 
     // Mettre à jour un paramètre
