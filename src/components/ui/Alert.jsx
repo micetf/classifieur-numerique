@@ -7,6 +7,13 @@ import PropTypes from "prop-types";
 const Alert = ({ title, message, type = "info", onClose, autoClose = 0 }) => {
     const [isVisible, setIsVisible] = useState(true);
 
+    const handleClose = useCallback(() => {
+        setIsVisible(false);
+        if (onClose) {
+            onClose();
+        }
+    }, [onClose]);
+
     // Fermeture automatique si autoClose > 0
     React.useEffect(() => {
         if (autoClose > 0) {
@@ -17,13 +24,6 @@ const Alert = ({ title, message, type = "info", onClose, autoClose = 0 }) => {
             return () => clearTimeout(timer);
         }
     }, [autoClose, handleClose]);
-
-    const handleClose = useCallback(() => {
-        setIsVisible(false);
-        if (onClose) {
-            onClose();
-        }
-    }, [onClose]);
 
     if (!isVisible) {
         return null;

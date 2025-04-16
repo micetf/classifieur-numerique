@@ -1,5 +1,5 @@
 import React from "react";
-import ClassifieurNumerique from "../components/ClassifieurNumerique";
+import ClassifieurNumerique from "../components/ClassifieurNumerique/index";
 
 const Home = () => {
     return (

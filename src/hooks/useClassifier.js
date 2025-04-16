@@ -1,204 +1,138 @@
-import { useState } from "react";
-import { patternRules } from "../constants/patternRules";
-import { rgpdKeywords } from "../constants/rgpdKeywords";
-import { crcnDomains } from "../constants/crcnDomains";
+// src/hooks/useClassifier.js
+import { useState, useCallback, useEffect } from "react";
+import { classifyContent, detectRgpdIssues } from "./classifier";
 
 /**
  * Hook personnalisé pour la classification de documents
+ * Fournit une interface simple pour utiliser les fonctionnalités de classification
  */
 export const useClassifier = () => {
+    // États
     const [classifications, setClassifications] = useState([]);
+    const [isUsingAI, setIsUsingAI] = useState(true);
+    const [apiKey, setApiKey] = useState("");
 
     /**
-     * Calcule un score de confiance pour un pattern trouvé
+     * Charger les préférences IA depuis localStorage au chargement
      */
-    function calculateConfidence(content, pattern) {
-        // Fréquence d'apparition du pattern
-        const regex = new RegExp(pattern.toLowerCase(), "g");
-        const occurrences = (content.match(regex) || []).length;
-
-        // Position dans le texte (début = plus important)
-        const position = content.indexOf(pattern.toLowerCase());
-        const positionScore =
-            position === -1
-                ? 0
-                : Math.max(0, 100 - (position / content.length) * 100);
-
-        // Longueur du pattern (plus long = plus spécifique)
-        const lengthScore = Math.min(100, (pattern.length / 10) * 100);
-
-        // Score final combiné
-        const score =
-            occurrences * 30 + positionScore * 0.4 + lengthScore * 0.3;
-        return Math.min(100, score);
-    }
-
-    /**
-     * Génère une explication pédagogique pour la classification
-     */
-    function generateExplanation(pattern, category, crcnDomain) {
-        let explanation = `Le classement est suggéré car le document mentionne "${pattern}"`;
-
-        if (category) {
-            explanation += ` qui est associé à la catégorie "${category}"`;
-        }
-
-        if (crcnDomain) {
-            explanation += ` (CRCN Domaine ${crcnDomain.id}: ${crcnDomain.name})`;
-        }
-
-        return explanation;
-    }
-
-    /**
-     * Trouve les domaines CRCN associés à un pattern
-     */
-    function findCRCNDomain(pattern) {
-        const patternLower = pattern.toLowerCase();
-
-        // Rechercher dans les domaines CRCN
-        for (const [domainId, domain] of Object.entries(crcnDomains)) {
-            const found = domain.keywords.some((keyword) =>
-                patternLower.includes(keyword.toLowerCase())
+    useEffect(() => {
+        try {
+            const savedSettings = localStorage.getItem("classifieurSettings");
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                if (settings.useAI !== undefined) {
+                    setIsUsingAI(settings.useAI);
+                }
+                if (settings.aiApiKey) {
+                    setApiKey(settings.aiApiKey);
+                }
+            }
+        } catch (error) {
+            console.error(
+                "Erreur lors du chargement des paramètres IA:",
+                error
             );
+        }
+    }, []);
 
-            if (found) {
+    /**
+     * Wrapper pour la fonction de classification
+     */
+    const classify = useCallback(
+        async (content, arborescence) => {
+            if (!content || !arborescence) {
                 return {
-                    id: domainId,
-                    name: domain.name,
+                    suggestions: [],
+                    allMatches: [],
+                    originalContent: content || "",
                 };
             }
+
+            try {
+                // Appeler la fonction de classification du module classifier
+                const result = await classifyContent(
+                    content,
+                    arborescence,
+                    isUsingAI,
+                    apiKey
+                );
+
+                // Mettre à jour l'état des classifications
+                setClassifications(result.allMatches || []);
+
+                return result;
+            } catch (error) {
+                console.error("Erreur lors de la classification:", error);
+                return {
+                    suggestions: [],
+                    allMatches: [],
+                    originalContent: content,
+                };
+            }
+        },
+        [isUsingAI, apiKey]
+    );
+
+    /**
+     * Wrapper pour la détection RGPD
+     */
+    const detectRgpd = useCallback((content) => {
+        return detectRgpdIssues(content);
+    }, []);
+
+    /**
+     * Bascule l'utilisation de l'IA (activation/désactivation)
+     */
+    const toggleAI = useCallback(() => {
+        const newValue = !isUsingAI;
+        setIsUsingAI(newValue);
+
+        // Sauvegarder la préférence dans localStorage
+        try {
+            const savedSettings = localStorage.getItem("classifieurSettings");
+            let settings = savedSettings ? JSON.parse(savedSettings) : {};
+            settings.useAI = newValue;
+            localStorage.setItem(
+                "classifieurSettings",
+                JSON.stringify(settings)
+            );
+        } catch (error) {
+            console.error(
+                "Erreur lors de la sauvegarde du paramètre IA:",
+                error
+            );
         }
-
-        return null;
-    }
+    }, [isUsingAI]);
 
     /**
-     * Trouve les chemins dans l'arborescence correspondant à une catégorie
+     * Définit la clé API pour l'IA
      */
-    function findPathsInArborescence(arborescence, category) {
-        const paths = [];
-        const categoryLower = category.toLowerCase();
+    const setAIApiKey = useCallback((key) => {
+        setApiKey(key);
 
-        // Fonction récursive pour parcourir l'arborescence
-        const traverseArborescence = (node, currentPath = "") => {
-            if (!node) return;
-
-            // Si c'est un objet avec des enfants
-            if (typeof node === "object" && !Array.isArray(node)) {
-                Object.entries(node).forEach(([key, value]) => {
-                    const newPath = currentPath ? `${currentPath}/${key}` : key;
-
-                    // Vérifier si la clé correspond à la catégorie
-                    if (key.toLowerCase().includes(categoryLower)) {
-                        paths.push(newPath);
-                    }
-
-                    // Continuer à parcourir
-                    traverseArborescence(value, newPath);
-                });
-            }
-        };
-
-        traverseArborescence(arborescence);
-        return paths;
-    }
-
-    /**
-     * Analyse un contenu et retourne les chemins de classification suggérés
-     */
-    function classifyContent(content, arborescence) {
-        if (!content || !arborescence) {
-            return {
-                suggestions: [],
-                allMatches: [],
-                originalContent: content || "",
-            };
+        // Sauvegarder la clé API dans localStorage
+        try {
+            const savedSettings = localStorage.getItem("classifieurSettings");
+            let settings = savedSettings ? JSON.parse(savedSettings) : {};
+            settings.aiApiKey = key;
+            localStorage.setItem(
+                "classifieurSettings",
+                JSON.stringify(settings)
+            );
+        } catch (error) {
+            console.error("Erreur lors de la sauvegarde de la clé API:", error);
         }
+    }, []);
 
-        const contentLower = content.toLowerCase();
-        const matches = [];
-
-        // Parcourir les règles de pattern pour trouver des correspondances
-        Object.entries(patternRules).forEach(([category, patterns]) => {
-            patterns.forEach((pattern) => {
-                if (contentLower.includes(pattern.toLowerCase())) {
-                    // Trouver les chemins correspondants dans l'arborescence
-                    const paths = findPathsInArborescence(
-                        arborescence,
-                        category
-                    );
-
-                    // Pour chaque chemin trouvé, ajouter une correspondance
-                    paths.forEach((path) => {
-                        // Déterminer les domaines CRCN concernés
-                        const crcnDomain = findCRCNDomain(pattern);
-
-                        matches.push({
-                            path,
-                            pattern,
-                            category,
-                            confidence: calculateConfidence(
-                                contentLower,
-                                pattern
-                            ),
-                            explanation: generateExplanation(
-                                pattern,
-                                category,
-                                crcnDomain
-                            ),
-                            crcnDomain,
-                        });
-                    });
-                }
-            });
-        });
-
-        // Trier par niveau de confiance
-        matches.sort((a, b) => b.confidence - a.confidence);
-
-        // Grouper par chemin pour éviter les doublons
-        const uniquePaths = [];
-        const result = matches.filter((match) => {
-            if (!uniquePaths.includes(match.path)) {
-                uniquePaths.push(match.path);
-                return true;
-            }
-            return false;
-        });
-
-        setClassifications(result);
-
-        return {
-            suggestions: result.slice(0, 3), // Top 3 suggestions
-            allMatches: result,
-            originalContent: content,
-        };
-    }
-
-    /**
-     * Détecte les problèmes RGPD potentiels dans un contenu
-     */
-    function detectRgpdIssues(content) {
-        if (!content) return [];
-
-        const contentLower = content.toLowerCase();
-        const detectedTerms = [];
-
-        rgpdKeywords.forEach((keyword) => {
-            if (contentLower.includes(keyword.toLowerCase())) {
-                detectedTerms.push(keyword);
-            }
-        });
-
-        return detectedTerms;
-    }
-
-    // Retourner les fonctions et l'état
+    // API publique du hook
     return {
-        classifyContent,
-        detectRgpdIssues,
+        classifyContent: classify,
+        detectRgpdIssues: detectRgpd,
         classifications,
+        isUsingAI,
+        toggleAI,
+        apiKey,
+        setAIApiKey,
     };
 };
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import ClassifieurNumerique from "./components/ClassifieurNumerique";
 import "./App.css";
 
 // Importation des pages

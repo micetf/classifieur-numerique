@@ -5,7 +5,12 @@ import PropTypes from "prop-types";
  * Composant pour afficher les résultats de classification et permettre
  * la sélection d'une suggestion ou la modification manuelle du chemin
  */
-const ClassificationResult = ({ result, onPathSelected, onBack }) => {
+const ClassificationResult = ({
+    result,
+    onPathSelected,
+    onBack,
+    isAIEnabled,
+}) => {
     const [selectedPath, setSelectedPath] = useState(
         result?.suggestions?.length > 0 ? result.suggestions[0].path : ""
     );
@@ -72,6 +77,11 @@ const ClassificationResult = ({ result, onPathSelected, onBack }) => {
         <div className="mb-6">
             <h2 className="text-xl font-semibold mb-4">
                 Résultats de classification
+                {isAIEnabled && result.aiGenerated && (
+                    <span className="ml-2 px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                        Assistée par IA
+                    </span>
+                )}
             </h2>
 
             {/* Si aucun résultat n'est trouvé */}
@@ -185,6 +195,12 @@ const ClassificationResult = ({ result, onPathSelected, onBack }) => {
                                                 </div>
                                                 <p className="ml-1 text-xs text-gray-600">
                                                     {suggestion.explanation}
+                                                    {isAIEnabled &&
+                                                        suggestion.aiGenerated && (
+                                                            <span className="ml-1 text-xs text-blue-600">
+                                                                (Suggestion IA)
+                                                            </span>
+                                                        )}
                                                 </p>
                                             </div>
                                             {suggestion.crcnDomain && (
@@ -343,9 +359,14 @@ ClassificationResult.propTypes = {
         suggestions: PropTypes.array,
         allMatches: PropTypes.array,
         originalContent: PropTypes.string,
+        isAIEnabled: PropTypes.bool,
     }),
     onPathSelected: PropTypes.func.isRequired,
     onBack: PropTypes.func.isRequired,
+};
+
+ClassificationResult.defaultProps = {
+    isAIEnabled: false,
 };
 
 export default ClassificationResult;
