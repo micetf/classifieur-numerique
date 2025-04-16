@@ -1,0 +1,112 @@
+{
+    "Communication_et_collaboration": {
+        "Echanges_institutionnels": {
+            "Courriers_officiels": {},
+            "Comptes_rendus_reunions": {},
+            "Chartes_collaboratives": {}
+        },
+        "Documents_administratifs": {
+            "AutorisationsEtConsentements": {},
+            "Circulaires": {},
+            "PlanningsEtCalendriers": {},
+            "RapportsAutoEvaluation": {}
+        },
+        "Reseaux_partenariaux": {
+            "Collectivites_locales": {},
+            "Associations_educatives": {},
+            "EdTech": {}
+        }
+    },
+    "Formation_et_accompagnement": {
+        "Parcours_formateurs": {
+            "Scenarios_pedagogiques": {},
+            "Grilles_evaluation": {},
+            "Retours_experiences": {}
+        },
+        "Fiches_pratiques": {
+            "CAREC": {},
+            "Methodes": {},
+            "ObservationClasse": {},
+            "RGPD": {}
+        },
+        "Supports_de_presentation": {
+            "2024-06-05_StageDirecteursNumerique_Ressources": {},
+            "2025-12-12_StageDirecteursNumerique_Ressources": {},
+            "Mutualisation": {}
+        },
+        "Outils_digitaux": {
+            "Tutoriels_creation": {},
+            "Bibliotheque_ressources": {},
+            "FAQ_technique": {}
+        }
+    },
+    "Gestion_du_materiel": {
+        "Inventaire_parc": {
+            "Tablettes_numeriques": {},
+            "Robots_educatifs": {},
+            "Maintenance_preventive": {}
+        },
+        "ManuelUtilisation": {
+            "MaterielAudioNumerique": {},
+            "ProjecteursInteractifs": {}
+        },
+        "Procedures": {
+            "Checklists_pret": {},
+            "Protocoles_securite": {},
+            "Archives_incidents": {}
+        }
+    },
+    "Projets_numeriques": {
+        "Experimentations": {
+            "Cahiers_charges": {},
+            "Suivi_evaluation": {},
+            "Capitalisation": {}
+        },
+        "InnovationsPedagogiques": {
+            "OEPRE": {},
+            "ProductionsAudio": {}
+        },
+        "Interdisciplinarite": {
+            "Maths_numerique": {},
+            "EMI_cycles": {},
+            "Programmation_creativite": {}
+        }
+    },
+    "Ressources_mathematiques": {
+        "Documentation": {}
+    },
+    "Ressources_pedagogiques_numeriques": {
+        "ApplicationsEducatives": {
+            "Anglais": {},
+            "OutilsGestionDeClasse": {},
+            "Plickers": {},
+            "Robotique": {}
+        },
+        "OutilsCreationNumerique": {},
+        "ScenariosPedagogiques": {
+            "AteliersRobotiqueCM2-6eme": {},
+            "BilanUsages": {},
+            "Histoire-Sciences": {},
+            "Maternelle": {},
+            "PourEnseignants": {}
+        },
+        "SupportPresentations": {}
+    },
+    "Veille_technopedagogique": {
+        "Revue_presse": {
+            "IA_education": {},
+            "Accessibilite": {},
+            "Innovations_EduTech": {}
+        },
+        "Analyse_tendances": {
+            "Etudes_cas": {},
+            "Benchmark_outils": {},
+            "Cartographie_usages": {}
+        }
+    },
+    "Groupes_de_Travail": {
+        "GDN07": {
+            "Comptes_rendus": {}
+        }
+    }
+}

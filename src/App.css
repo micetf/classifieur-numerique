@@ -1,0 +1,253 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --color-education-50: #f0f9ff;
+    --color-education-100: #e0f2fe;
+    --color-education-200: #bae6fd;
+    --color-education-300: #7dd3fc;
+    --color-education-400: #38bdf8;
+    --color-education-500: #0ea5e9;
+    --color-education-600: #0284c7;
+    --color-education-700: #0369a1;
+    --color-education-800: #075985;
+    --color-education-900: #0c4a6e;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f3f4f6;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Input focus styles */
+.focus-within-ring {
+    @apply focus-within:ring-2 focus-within:ring-education-500 focus-within:border-education-500;
+}
+
+/* Button animations */
+.button-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(14, 165, 233, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Custom file input */
+input[type="file"] {
+    @apply block w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-education-50 file:text-education-700 hover:file:bg-education-100;
+}
+
+/* Tooltip */
+.tooltip {
+    @apply relative inline-block;
+}
+
+.tooltip .tooltip-text {
+    @apply invisible absolute z-10 p-2 text-xs text-white bg-gray-900 rounded-lg opacity-0 transition-opacity duration-300;
+    width: 120px;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    text-align: center;
+}
+
+.tooltip:hover .tooltip-text {
+    @apply visible opacity-100;
+}
+
+.tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+/* Command line syntax highlighting */
+.command-line {
+    @apply font-mono text-sm leading-relaxed whitespace-pre-wrap break-all;
+}
+
+.command-line .comment {
+    @apply text-gray-500;
+}
+
+.command-line .command {
+    @apply text-blue-600 font-semibold;
+}
+
+.command-line .option {
+    @apply text-green-600;
+}
+
+.command-line .path {
+    @apply text-yellow-600;
+}
+
+/* Badge styles */
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-blue {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.badge-green {
+    @apply bg-green-100 text-green-800;
+}
+
+.badge-yellow {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-red {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .responsive-table thead {
+        @apply hidden;
+    }
+
+    .responsive-table tbody tr {
+        @apply block border-b border-gray-200 py-2;
+    }
+
+    .responsive-table tbody td {
+        @apply block text-right pl-4 py-1;
+    }
+
+    .responsive-table tbody td::before {
+        content: attr(data-label);
+        @apply float-left font-medium text-gray-700;
+    }
+}
+
+/* Accessible focus outline */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    @apply outline-none ring-2 ring-education-500 ring-offset-2;
+}
+
+/* Helper classes */
+.elevation-1 {
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.elevation-2 {
+    box-shadow:
+        0 3px 6px rgba(0, 0, 0, 0.16),
+        0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.elevation-3 {
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.19),
+        0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background-color: white;
+    }
+
+    .print-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+/* Accessibility */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background-color: var(--color-education-700);
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
