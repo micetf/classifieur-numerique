@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Alert from "../components/ui/Alert";
+import { useAlerts } from "../contexts/alerts";
 import { settingsService } from "../services/settingsService";
+import Icon from "../components/ui/Icon.jsx";
 
 const Settings = () => {
     const [settings, setSettings] = useState({
@@ -17,9 +18,11 @@ const Settings = () => {
         showExplanations: true,
     });
 
-    const [alert, setAlert] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [activeTab, setActiveTab] = useState("general");
+
+    // Utiliser le contexte d'alertes
+    const { showSuccess, showError, showWarning } = useAlerts();
 
     // Charger les paramètres depuis le localStorage au chargement
     useEffect(() => {
@@ -46,24 +49,18 @@ const Settings = () => {
                 JSON.stringify(settings)
             );
 
-            setAlert({
-                type: "success",
-                message: "Les paramètres ont été enregistrés avec succès.",
-            });
+            showSuccess("Les paramètres ont été enregistrés avec succès.");
 
             // Propager les changements à l'application
-            // Cela pourrait être fait via un contexte global ou un gestionnaire d'état
-            // Pour l'instant, on utilise un événement personnalisé
             window.dispatchEvent(
                 new CustomEvent("settings-updated", {
                     detail: { settings },
                 })
             );
         } catch (err) {
-            setAlert({
-                type: "error",
-                message: `Erreur lors de l'enregistrement des paramètres: ${err.message}`,
-            });
+            showError(
+                `Erreur lors de l'enregistrement des paramètres: ${err.message}`
+            );
         } finally {
             setIsSaving(false);
         }
@@ -98,11 +95,9 @@ const Settings = () => {
                     JSON.stringify(defaultSettings)
                 );
 
-                setAlert({
-                    type: "success",
-                    message:
-                        "Les paramètres ont été réinitialisés avec succès.",
-                });
+                showSuccess(
+                    "Les paramètres ont été réinitialisés avec succès."
+                );
 
                 // Propager les changements
                 window.dispatchEvent(
@@ -111,10 +106,9 @@ const Settings = () => {
                     })
                 );
             } catch (err) {
-                setAlert({
-                    type: "error",
-                    message: `Erreur lors de la réinitialisation des paramètres: ${err.message}`,
-                });
+                showError(
+                    `Erreur lors de la réinitialisation des paramètres: ${err.message}`
+                );
             }
         }
     };
@@ -127,10 +121,9 @@ const Settings = () => {
                 : settings.persoArborescenceUrl;
 
         if (!url) {
-            setAlert({
-                type: "warning",
-                message: `Aucune URL définie pour l'arborescence ${type === "cpc" ? "CPC" : "personnelle"}.`,
-            });
+            showWarning(
+                `Aucune URL définie pour l'arborescence ${type === "cpc" ? "CPC" : "personnelle"}.`
+            );
             return;
         }
 
@@ -150,15 +143,11 @@ const Settings = () => {
                 );
             }
 
-            setAlert({
-                type: "success",
-                message: `L'URL de l'arborescence ${type === "cpc" ? "CPC" : "personnelle"} est valide et accessible.`,
-            });
+            showSuccess(
+                `L'URL de l'arborescence ${type === "cpc" ? "CPC" : "personnelle"} est valide et accessible.`
+            );
         } catch (err) {
-            setAlert({
-                type: "error",
-                message: `Erreur lors du test de l'URL: ${err.message}`,
-            });
+            showError(`Erreur lors du test de l'URL: ${err.message}`);
         }
     };
 
@@ -173,10 +162,7 @@ const Settings = () => {
             const historyItems = await getHistoryItems();
 
             if (historyItems.length === 0) {
-                setAlert({
-                    type: "warning",
-                    message: "Aucun élément dans l'historique à exporter.",
-                });
+                showWarning("Aucun élément dans l'historique à exporter.");
                 return;
             }
 
@@ -190,15 +176,13 @@ const Settings = () => {
             linkElement.setAttribute("download", exportFileDefaultName);
             linkElement.click();
 
-            setAlert({
-                type: "success",
-                message: `${historyItems.length} éléments d'historique exportés avec succès.`,
-            });
+            showSuccess(
+                `${historyItems.length} éléments d'historique exportés avec succès.`
+            );
         } catch (err) {
-            setAlert({
-                type: "error",
-                message: `Erreur lors de l'exportation de l'historique: ${err.message}`,
-            });
+            showError(
+                `Erreur lors de l'exportation de l'historique: ${err.message}`
+            );
         }
     };
 
@@ -207,16 +191,6 @@ const Settings = () => {
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 Paramètres
             </h1>
-
-            {alert && (
-                <Alert
-                    message={alert.message}
-                    type={alert.type}
-                    onClose={() => setAlert(null)}
-                    autoClose={5000}
-                    className="mb-4"
-                />
-            )}
 
             {/* Onglets de navigation */}
             <div className="border-b border-gray-200 mb-6">
@@ -504,18 +478,10 @@ const Settings = () => {
                             <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-md">
                                 <div className="flex">
                                     <div className="flex-shrink-0">
-                                        <svg
+                                        <Icon
+                                            name="warning"
                                             className="h-5 w-5 text-yellow-400"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        />
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-sm font-medium text-yellow-800">
@@ -603,8 +569,6 @@ const Settings = () => {
                                     </p>
                                 </div>
                             </div>
-
-                            {/* Ajouter d'autres options de classification ici si nécessaire */}
                         </div>
                     </div>
                 )}
@@ -669,18 +633,10 @@ const Settings = () => {
                             <div className="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-md">
                                 <div className="flex">
                                     <div className="flex-shrink-0">
-                                        <svg
+                                        <Icon
+                                            name="info"
                                             className="h-5 w-5 text-blue-400"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        />
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-sm font-medium text-blue-800">
@@ -753,18 +709,10 @@ const Settings = () => {
                                             linkElement.click();
                                         }}
                                     >
-                                        <svg
+                                        <Icon
+                                            name="download"
                                             className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        />
                                         Exporter les paramètres
                                     </button>
 
@@ -773,18 +721,10 @@ const Settings = () => {
                                             htmlFor="importSettings"
                                             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-education-500 cursor-pointer"
                                         >
-                                            <svg
+                                            <Icon
+                                                name="upload"
                                                 className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 8.586V16a1 1 0 11-2 0V8.586l-1.293 1.293a1 1 0 01-1.414 0z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
+                                            />
                                             Importer les paramètres
                                         </label>
                                         <input
@@ -808,16 +748,13 @@ const Settings = () => {
                                                                 importedSettings
                                                             );
 
-                                                            setAlert({
-                                                                type: "success",
-                                                                message:
-                                                                    "Paramètres importés avec succès. N'oubliez pas de les enregistrer !",
-                                                            });
+                                                            showSuccess(
+                                                                "Paramètres importés avec succès. N'oubliez pas de les enregistrer !"
+                                                            );
                                                         } catch (err) {
-                                                            setAlert({
-                                                                type: "error",
-                                                                message: `Erreur lors de l'importation des paramètres: ${err.message}`,
-                                                            });
+                                                            showError(
+                                                                `Erreur lors de l'importation des paramètres: ${err.message}`
+                                                            );
                                                         }
                                                     };
                                                     reader.readAsText(file);
@@ -838,18 +775,10 @@ const Settings = () => {
                                         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-education-500"
                                         onClick={exportHistory}
                                     >
-                                        <svg
+                                        <Icon
+                                            name="download"
                                             className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        />
                                         Exporter l'historique
                                     </button>
 
@@ -871,32 +800,21 @@ const Settings = () => {
                                                 ) {
                                                     await clearHistory();
 
-                                                    setAlert({
-                                                        type: "success",
-                                                        message:
-                                                            "Historique effacé avec succès.",
-                                                    });
+                                                    showSuccess(
+                                                        "Historique effacé avec succès."
+                                                    );
                                                 }
                                             } catch (err) {
-                                                setAlert({
-                                                    type: "error",
-                                                    message: `Erreur lors de l'effacement de l'historique: ${err.message}`,
-                                                });
+                                                showError(
+                                                    `Erreur lors de l'effacement de l'historique: ${err.message}`
+                                                );
                                             }
                                         }}
                                     >
-                                        <svg
+                                        <Icon
+                                            name="delete"
                                             className="-ml-1 mr-2 h-5 w-5 text-red-500"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        />
                                         Effacer l'historique
                                     </button>
                                 </div>
@@ -949,6 +867,10 @@ const Settings = () => {
                     onClick={handleReset}
                     className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-education-500"
                 >
+                    <Icon
+                        name="refresh"
+                        className="-ml-1 mr-2 h-4 w-4 text-gray-500"
+                    />
                     Réinitialiser
                 </button>
 
@@ -964,30 +886,20 @@ const Settings = () => {
                 >
                     {isSaving ? (
                         <>
-                            <svg
-                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                ></circle>
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                            </svg>
+                            <Icon
+                                name="loading"
+                                className="-ml-1 mr-2 h-4 w-4 text-white"
+                            />
                             Enregistrement...
                         </>
                     ) : (
-                        "Enregistrer"
+                        <>
+                            <Icon
+                                name="save"
+                                className="-ml-1 mr-2 h-4 w-4 text-white"
+                            />
+                            Enregistrer
+                        </>
                     )}
                 </button>
             </div>

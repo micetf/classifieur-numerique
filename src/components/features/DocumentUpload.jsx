@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
-import Alert from "../ui/Alert";
+import { useAlerts } from "../../contexts/alerts";
 import Icon from "../ui/Icon.jsx";
 
 /**
@@ -10,8 +10,10 @@ const DocumentUpload = ({ onUpload }) => {
     const [dragActive, setDragActive] = useState(false);
     const [file, setFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
+
+    // Utiliser le contexte d'alertes
+    const { showError } = useAlerts();
 
     // Formats de fichiers autorisés
     const ALLOWED_TYPES = [
@@ -76,8 +78,6 @@ const DocumentUpload = ({ onUpload }) => {
      * Gestionnaire pour la sélection de fichier
      */
     const handleFileChange = (file) => {
-        setError(null);
-
         if (!file) {
             setFile(null);
             return;
@@ -85,7 +85,7 @@ const DocumentUpload = ({ onUpload }) => {
 
         // Vérifier le type de fichier
         if (!isFileTypeAllowed(file)) {
-            setError(
+            showError(
                 `Type de fichier non autorisé. Veuillez utiliser un fichier PDF ou ODT.`
             );
             setFile(null);
@@ -94,7 +94,7 @@ const DocumentUpload = ({ onUpload }) => {
 
         // Vérifier la taille du fichier (max 10 Mo)
         if (file.size > 10 * 1024 * 1024) {
-            setError(
+            showError(
                 `Fichier trop volumineux. La taille maximale est de 10 Mo.`
             );
             setFile(null);
@@ -118,12 +118,11 @@ const DocumentUpload = ({ onUpload }) => {
         e.preventDefault();
 
         if (!file) {
-            setError("Veuillez sélectionner un fichier.");
+            showError("Veuillez sélectionner un fichier.");
             return;
         }
 
         setIsLoading(true);
-        setError(null);
 
         try {
             // Extraire le contenu du fichier si possible
@@ -140,7 +139,7 @@ const DocumentUpload = ({ onUpload }) => {
             // Appeler la fonction de callback
             onUpload(documentData);
         } catch (err) {
-            setError(`Erreur lors du traitement du fichier: ${err.message}`);
+            showError(`Erreur lors du traitement du fichier: ${err.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -149,14 +148,6 @@ const DocumentUpload = ({ onUpload }) => {
     return (
         <div className="mb-6">
             <h2 className="text-xl font-semibold mb-4">Upload de document</h2>
-
-            {error && (
-                <Alert
-                    message={error}
-                    type="error"
-                    onClose={() => setError(null)}
-                />
-            )}
 
             <form onSubmit={handleSubmit}>
                 <div
@@ -211,6 +202,10 @@ const DocumentUpload = ({ onUpload }) => {
                         onClick={handleButtonClick}
                         className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-education-500"
                     >
+                        <Icon
+                            name="search"
+                            className="h-4 w-4 mr-1.5 text-gray-500"
+                        />
                         Parcourir
                     </button>
                 </div>
@@ -227,14 +222,17 @@ const DocumentUpload = ({ onUpload }) => {
                     >
                         {isLoading ? (
                             <>
-                                <Icon
-                                    name="loading"
-                                    className="h-4 w-4 mr-2 animate-spin"
-                                />
+                                <Icon name="loading" className="h-4 w-4 mr-2" />
                                 Traitement...
                             </>
                         ) : (
-                            "Analyser"
+                            <>
+                                <Icon
+                                    name="analyze"
+                                    className="h-4 w-4 mr-1.5"
+                                />
+                                Analyser
+                            </>
                         )}
                     </button>
                 </div>

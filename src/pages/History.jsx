@@ -1,41 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     getHistoryItems,
     deleteHistoryItem,
     clearHistory,
     searchHistory,
 } from "../services/indexedDBService";
-import Alert from "../components/ui/Alert";
+import { useAlerts } from "../contexts/alerts";
 import Icon from "../components/ui/Icon.jsx";
 
 const History = () => {
     const [historyItems, setHistoryItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [alert, setAlert] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Charger l'historique au chargement de la page
-    useEffect(() => {
-        loadHistory();
-    }, []);
+    // Utiliser le contexte d'alertes
+    const { showSuccess, showError } = useAlerts();
 
     // Charger les éléments d'historique
-    const loadHistory = async () => {
+    const loadHistory = useCallback(async () => {
         try {
             setLoading(true);
             const items = await getHistoryItems();
             setHistoryItems(items);
-            setError(null);
         } catch (err) {
-            setError(
+            showError(
                 `Erreur lors du chargement de l'historique: ${err.message}`
             );
         } finally {
             setLoading(false);
         }
-    };
+    }, [showError]);
+    // Charger l'historique au chargement de la page
+    useEffect(() => {
+        loadHistory();
+    }, [loadHistory]);
 
     // Rechercher dans l'historique
     const handleSearch = async () => {
@@ -44,7 +43,7 @@ const History = () => {
             const results = await searchHistory(searchTerm);
             setHistoryItems(results);
         } catch (err) {
-            setError(`Erreur lors de la recherche: ${err.message}`);
+            showError(`Erreur lors de la recherche: ${err.message}`);
         } finally {
             setLoading(false);
         }
@@ -62,12 +61,9 @@ const History = () => {
             setIsDeleting(true);
             await deleteHistoryItem(id);
             setHistoryItems((prev) => prev.filter((item) => item.id !== id));
-            setAlert({
-                message: "Élément supprimé avec succès",
-                type: "success",
-            });
+            showSuccess("Élément supprimé avec succès");
         } catch (err) {
-            setError(`Erreur lors de la suppression: ${err.message}`);
+            showError(`Erreur lors de la suppression: ${err.message}`);
         } finally {
             setIsDeleting(false);
         }
@@ -84,12 +80,9 @@ const History = () => {
                 setIsDeleting(true);
                 await clearHistory();
                 setHistoryItems([]);
-                setAlert({
-                    message: "Historique effacé avec succès",
-                    type: "success",
-                });
+                showSuccess("Historique effacé avec succès");
             } catch (err) {
-                setError(
+                showError(
                     `Erreur lors de l'effacement de l'historique: ${err.message}`
                 );
             } finally {
@@ -111,12 +104,9 @@ const History = () => {
     const copyCommand = async (command) => {
         try {
             await navigator.clipboard.writeText(command);
-            setAlert({
-                message: "Commande copiée dans le presse-papier",
-                type: "success",
-            });
+            showSuccess("Commande copiée dans le presse-papier");
         } catch (err) {
-            setError(`Erreur lors de la copie: ${err.message}`);
+            showError(`Erreur lors de la copie: ${err.message}`);
         }
     };
 
@@ -125,25 +115,6 @@ const History = () => {
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 Historique des opérations
             </h1>
-
-            {alert && (
-                <Alert
-                    message={alert.message}
-                    type={alert.type}
-                    onClose={() => setAlert(null)}
-                    autoClose={3000}
-                    className="mb-4"
-                />
-            )}
-
-            {error && (
-                <Alert
-                    message={error}
-                    type="error"
-                    onClose={() => setError(null)}
-                    className="mb-4"
-                />
-            )}
 
             {/* Barre de recherche */}
             <div className="flex mb-6">
