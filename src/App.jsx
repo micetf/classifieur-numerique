@@ -6,6 +6,7 @@ import "./App.css";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
 import Home from "./pages/Home";
+import Icon from "./components/ui/Icon.jsx";
 
 function App() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -28,35 +29,13 @@ function App() {
                                         className="md:hidden text-white focus:outline-none"
                                         onClick={toggleSidebar}
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-6 w-6"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M4 6h16M4 12h16M4 18h16"
-                                            />
-                                        </svg>
+                                        <Icon name="menu" className="h-6 w-6" />
                                     </button>
-                                    <svg
+                                    <Icon
+                                        name="document"
                                         className="h-8 w-8 text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14 2 14 8 20 8"></polyline>
-                                        <path d="M10 12L8 14l2 2m4-4l2 2-2 2"></path>
-                                    </svg>
+                                    />
+
                                     <span className="ml-2 text-xl font-bold text-white hidden sm:block">
                                         ClassifieurCPC
                                     </span>
@@ -108,20 +87,11 @@ function App() {
                             <div className="px-4 py-6 border-b border-education-600">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center">
-                                        <svg
+                                        <Icon
+                                            name="document"
                                             className="h-8 w-8 text-white"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                            <polyline points="14 2 14 8 20 8"></polyline>
-                                            <path d="M10 12L8 14l2 2m4-4l2 2-2 2"></path>
-                                        </svg>
+                                        />
+
                                         <span className="ml-2 text-xl font-bold text-white">
                                             ClassifieurCPC
                                         </span>
@@ -130,20 +100,10 @@ function App() {
                                         className="text-white focus:outline-none"
                                         onClick={toggleSidebar}
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
+                                        <Icon
+                                            name="close"
                                             className="h-6 w-6"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
+                                        />
                                     </button>
                                 </div>
                             </div>

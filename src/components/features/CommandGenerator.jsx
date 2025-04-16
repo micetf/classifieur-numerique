@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import Alert from "../ui/Alert";
+import Icon from "../ui/Icon.jsx";
 
 /**
  * Composant pour afficher et gérer les commandes Linux générées
@@ -103,18 +104,10 @@ const CommandGenerator = ({ command, onBack, onReset }) => {
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
                 <div className="flex">
                     <div className="flex-shrink-0">
-                        <svg
+                        <Icon
+                            name="warning"
                             className="h-5 w-5 text-yellow-400"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        />
                     </div>
                     <div className="ml-3">
                         <h3 className="text-sm font-medium text-yellow-800">
@@ -160,31 +153,19 @@ const CommandGenerator = ({ command, onBack, onReset }) => {
                     >
                         {copied ? (
                             <>
-                                <svg
+                                <Icon
+                                    name="copied"
                                     className="h-4 w-4 mr-1.5 text-green-500"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                />
                                 Copié
                             </>
                         ) : (
                             <>
-                                <svg
+                                *
+                                <Icon
+                                    name="copy"
                                     className="h-4 w-4 mr-1.5 text-gray-500"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
-                                    <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
-                                </svg>
+                                />
                                 Copier
                             </>
                         )}
@@ -195,18 +176,7 @@ const CommandGenerator = ({ command, onBack, onReset }) => {
                         onClick={onReset}
                         className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-education-600 hover:bg-education-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-education-500"
                     >
-                        <svg
-                            className="h-4 w-4 mr-1.5"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <Icon name="refresh" className="h-4 w-4 mr-1.5" />
                         Nouveau classement
                     </button>
                 </div>
