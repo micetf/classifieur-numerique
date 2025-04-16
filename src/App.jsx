@@ -4,7 +4,7 @@ import "./App.css";
 
 // Importation des pages
 import History from "./pages/History";
-import Settings from "./pages/Settings";
+import Settings from "./pages/Settings/index";
 import Home from "./pages/Home";
 import Icon from "./components/ui/Icon.jsx";
 
